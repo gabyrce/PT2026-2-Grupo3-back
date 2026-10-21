@@ -7,9 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// guarda os dados usados no cadastro e no login.
 model Usuario {
   id        Int      @id @default(autoincrement())
   nome      String
+  username  String   @unique
   email     String   @unique
   senhaHash String
   createdAt DateTime @default(now())
