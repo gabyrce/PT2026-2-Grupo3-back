@@ -9,11 +9,129 @@ datasource db {
 
 // guarda os dados usados no cadastro e no login.
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  username  String   @unique
-  email     String   @unique
-  senhaHash String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                    Int      @id @default(autoincrement())
+  nome                  String
+  username              String   @unique
+  email                 String   @unique
+  senhaHash             String
+  profile_picture_url   String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  lojas                 Lojas[]
+  novaSenha             NovaSenha[]
+  avaliacaoLoja         AvaliacaoLojas[]
+  avaliacaoProduto      AvaliacaoProdutos[]
+  avaliacaoComentario   AvaliacaoComentarios[]
+}
+
+
+model Categorias {
+  id                      Int     @id @default(autoincrement())
+  nome                    String  
+  categoria_principal_id  Int?  
+
+  categoriaPrincipal    Categorias?   @relation("CategoriasHierarquia", fields: [categoria_principal_id], references: [id])
+  subCategoria          Categorias[]  @relation("CategoriasHierarquia")
+  loja                  Lojas[]
+  produto               Produtos[]
+}
+
+
+
+model Lojas {
+  id            Int @id @default(autoincrement())
+  usuario_id    Int
+  categoria_id  Int
+  nome          String
+  descricao     String?
+  logo_url      String?
+  banner_url    String?
+  sticker_url   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  usuario       Usuario     @relation(fields: [usuario_id], references: [id])
+  categoria     Categorias  @relation(fields: [categoria_id], references: [id])
+  produtos      Produtos[]
+  avaliacoes    AvaliacaoLojas[]
+}
+
+model Produtos {
+  id            Int @id @default(autoincrement())
+  loja_id       Int
+  categoria_id  Int
+  nome          String
+  descricao     String?
+  preco         Float
+  stock         Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  loja          Lojas           @relation(fields: [loja_id], references: [id])
+  categoria     Categorias      @relation(fields: [categoria_id], references: [id])
+  images        ImagensProduto[]
+  avaliacoes    AvaliacaoProdutos[]
+}
+
+model ImagensProduto {
+  id            Int @id @default(autoincrement())
+  produto_id    Int
+  image_url     String
+  pedido        Int
+
+  produto      Produtos  @relation(fields: [produto_id], references: [id])
+}
+
+model NovaSenha {
+  id            Int @id @default(autoincrement())
+  usuario_id    Int
+  code          Int
+  expiresAt     DateTime
+  used          Boolean @default(false)
+  createdAt     DateTime @default(now())
+
+  usuario       Usuario   @relation(fields: [usuario_id], references: [id])
+}
+
+model AvaliacaoLojas {
+  id            Int @id @default(autoincrement())
+  usuario_id    Int
+  loja_id       Int
+  nota          Int
+  comentario    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  usuario       Usuario   @relation(fields: [usuario_id], references: [id])
+  loja          Lojas     @relation(fields: [loja_id], references: [id])
+  comentarios   AvaliacaoComentarios[]
+}
+
+model AvaliacaoProdutos {
+  id            Int @id @default(autoincrement())
+  usuario_id    Int
+  produto_id    Int
+  nota          Int
+  comentario    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  usuario       Usuario   @relation(fields: [usuario_id], references: [id])
+  produto       Produtos   @relation(fields: [produto_id], references: [id])
+  comentarios   AvaliacaoComentarios[]
+}
+
+model AvaliacaoComentarios {
+  id                  Int @id @default(autoincrement())
+  usuario_id          Int
+  avaliacao_loja_id   Int?
+  avaliacao_prod_id   Int?
+  conteudo            String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  usuario           Usuario           @relation(fields: [usuario_id], references: [id])
+  avaliacaoLoja     AvaliacaoLojas?   @relation(fields: [avaliacao_loja_id], references: [id])
+  avaliacaoProduto  AvaliacaoProdutos? @relation(fields: [avaliacao_prod_id], references: [id])
 }
