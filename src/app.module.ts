@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-
-export const { ObserveModule, ObserveInstrument } = createObserveModule();
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -15,11 +13,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
     PrismaModule,
     AuthModule,
-    ObserveModule.forRoot({
-      appKey: 'YOUR_APP_KEY',
-      appSecret: 'YOUR_APP_SECRET',
-      serviceId: 'project',
-    }),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
