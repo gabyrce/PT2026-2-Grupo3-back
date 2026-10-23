@@ -1,14 +1,15 @@
-// inicia a aplicação e ativa a validação dos dados recebidos
+
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule, ObserveInstrument } from './app.module';
+import { AppModule } from './app.module';
 
-// cria o servidor, configura a validação e abre a porta
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    instrument: ObserveInstrument,
-  });
+  const app = await NestFactory.create(AppModule);
 
+  // Permite a comunicação entre o frontend e o backend
+  app.enableCors();
+
+  // Valida os dados recebidos pelas rotas
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
