@@ -1,4 +1,5 @@
 
+// faz as operações de usuário no banco e protege a senha
 import {
   Injectable,
   NotFoundException,
@@ -12,13 +13,22 @@ import * as bcrypt from 'bcryptjs';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // verifica duplicidades, gera o hash da senha e cria a conta
   async create(dto: CreateUserDto) {
-    const existente = await this.prisma.usuario.findUnique({
+    const email_existente = await this.prisma.usuario.findUnique({ //verifica se tem email cadastrado
       where: { email: dto.email },
     });
 
-    if (existente) {
+    if (email_existente) {
       throw new ConflictException('Este e-mail já está cadastrado.');
+    }
+
+    const username_existente = await this.prisma.usuario.findUnique({
+      where: { username: dto.username },
+    });
+
+    if (username_existente) {
+      throw new ConflictException('Este nome de usuário já está cadastrado.');
     }
 
     const senhaHash = await bcrypt.hash(dto.senha, 10);
@@ -26,12 +36,14 @@ export class UserService {
     return this.prisma.usuario.create({
       data: {
         nome: dto.nome,
+        username: dto.username,
         email: dto.email,
         senhaHash,
       },
       select: {
         id: true,
         nome: true,
+        username: true,
         email: true,
         createdAt: true,
         updatedAt: true,
@@ -39,11 +51,13 @@ export class UserService {
     });
   }
 
+  // lista os usuários sem incluir o hash da senha
   async findAll() {
     return this.prisma.usuario.findMany({
       select: {
         id: true,
         nome: true,
+        username: true,
         email: true,
         createdAt: true,
         updatedAt: true,
@@ -51,12 +65,14 @@ export class UserService {
     });
   }
 
+  // busca um usuário pelo id e avisa quando ele não existe
   async findOne(id: number) {
     const usuario = await this.prisma.usuario.findUnique({
       where: { id },
       select: {
         id: true,
         nome: true,
+        username: true,
         email: true,
         createdAt: true,
         updatedAt: true,
@@ -70,19 +86,42 @@ export class UserService {
     return usuario;
   }
 
+  // altera os campos enviados e gera um novo hash se a senha mudar
   async update(
     id: number,
-    dados: { nome?: string; email?: string; senha?: string },
+    dados: { nome?: string; username?: string; email?: string; senha?: string },
   ) {
     await this.findOne(id);
 
+    if (dados.username !== undefined) {
+      const usuarioComUsername = await this.prisma.usuario.findUnique({
+        where: { username: dados.username },
+      });
+
+      if (usuarioComUsername && usuarioComUsername.id !== id) {
+        throw new ConflictException('Este nome de usuário já está cadastrado.');
+      }
+    }
+
+    if (dados.email !== undefined) {
+      const usuarioComEmail = await this.prisma.usuario.findUnique({
+        where: { email: dados.email },
+      });
+
+      if (usuarioComEmail && usuarioComEmail.id !== id) {
+        throw new ConflictException('Este e-mail já está cadastrado.');
+      }
+    }
+
     const data: {
       nome?: string;
+      username?: string;
       email?: string;
       senhaHash?: string;
     } = {};
 
     if (dados.nome !== undefined) data.nome = dados.nome;
+    if (dados.username !== undefined) data.username = dados.username;
     if (dados.email !== undefined) data.email = dados.email;
 
     if (dados.senha !== undefined) {
@@ -95,6 +134,7 @@ export class UserService {
       select: {
         id: true,
         nome: true,
+        username: true,
         email: true,
         createdAt: true,
         updatedAt: true,
@@ -102,6 +142,7 @@ export class UserService {
     });
   }
 
+  // exclui a conta depois de confirmar que ela existe
   async remove(id: number) {
     await this.findOne(id);
 
@@ -110,11 +151,13 @@ export class UserService {
       select: {
         id: true,
         nome: true,
+        username: true,
         email: true,
       },
     });
   }
 
+  // busca o cadastro pelo e-mail para conferir o login
   async findByEmail(email: string) {
     return this.prisma.usuario.findUnique({
       where: { email },
