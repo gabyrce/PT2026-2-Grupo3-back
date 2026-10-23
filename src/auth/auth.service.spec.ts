@@ -39,6 +39,26 @@ describe('AuthService', () => {
     ).rejects.toThrow(UnauthorizedException);
   });
 
+    // recusa o login quando a senha está incorreta
+  it('recusa senha incorreta', async () => {
+    const senhaHash = await bcrypt.hash('senha-correta', 10);
+
+    userServiceMock.findByEmail.mockResolvedValue({
+      id: 1,
+      email: 'ana@example.com',
+      senhaHash,
+    });
+
+    await expect(
+      service.login({
+        email: 'ana@example.com',
+        senha: 'senha-errada',
+      }),
+    ).rejects.toThrow(UnauthorizedException);
+
+    expect(jwtServiceMock.signAsync).not.toHaveBeenCalled();
+  });
+
   // devolve um token quando a senha confere
   it('gera token quando e-mail e senha estão corretos', async () => {
     const senhaHash = await bcrypt.hash('senha123', 10);
