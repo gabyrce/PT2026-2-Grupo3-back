@@ -1,20 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
+// testa se a rota de login repassa os dados ao service
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 describe('AuthController', () => {
-  let controller: AuthController;
+  // confere a chamada ao serviço e a resposta com o token
+  it('envia os dados de login ao serviço', async () => {
+    const authServiceMock = {
+      login: jest.fn().mockResolvedValue({ access_token: 'token-teste' }),
+    };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [AuthController],
-      providers: [AuthService],
-    }).compile();
+    const controller = new AuthController(
+      authServiceMock as unknown as AuthService,
+    );
 
-    controller = module.get<AuthController>(AuthController);
-  });
+    const dados = {
+      email: 'ana@example.com',
+      senha: 'senha123',
+    };
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+    await expect(controller.login(dados)).resolves.toEqual({
+      access_token: 'token-teste',
+    });
+    expect(authServiceMock.login).toHaveBeenCalledWith(dados);
   });
 });
