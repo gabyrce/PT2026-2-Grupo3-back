@@ -70,7 +70,7 @@ model Produtos {
 
   loja          Lojas           @relation(fields: [loja_id], references: [id])
   categoria     Categorias      @relation(fields: [categoria_id], references: [id])
-  images        ImagensProduto[]
+  imagens        ImagensProduto[]
   avaliacoes    AvaliacaoProdutos[]
 }
 
