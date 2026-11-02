@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { CategoriasService } from './categorias.service';
 import type { categoriadto } from './categoria.dto';
+import { Public } from '../auth/decorators/isPublic.decorator';
 
+@Public()
 @Controller('categorias')
 export class CategoriasController {
   constructor(private readonly categoriasService: CategoriasService) {}
