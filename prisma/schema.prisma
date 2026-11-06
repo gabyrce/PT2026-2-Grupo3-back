@@ -8,10 +8,33 @@ datasource db {
 }
 
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  email     String   @unique
-  senhaHash String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int          @id @default(autoincrement())
+  nome        String
+  email       String       @unique
+  senhaHash   String
+  avaliacoes  Avaliacao[]
+  comentarios Comentario[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Avaliacao {
+  id          Int          @id @default(autoincrement())
+  nota        Float        // Ex: 4.75 ou estrelas de 1 a 5
+  texto       String
+  usuarioId   Int
+  usuario     Usuario      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  comentarios Comentario[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Comentario {
+  id          Int       @id @default(autoincrement())
+  texto       String
+  avaliacaoId Int
+  avaliacao   Avaliacao @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
+  usuarioId   Int
+  usuario     Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
 }
