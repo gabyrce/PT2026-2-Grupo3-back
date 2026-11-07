@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AvaliacaoService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // 1. Criar uma nova avaliação (CREATE)
+  //Cria uma nova avaliação
   async criar(usuarioId: number, nota: number, texto: string) {
     return this.prisma.avaliacao.create({
       data: {
@@ -19,7 +19,7 @@ export class AvaliacaoService {
     });
   }
 
-  // 2. Listar avaliações e calcular a média geral (READ)
+  //Lista avaliações e calcula a média geral
   async buscarTodas() {
     const avaliacoes = await this.prisma.avaliacao.findMany({
       include: {
@@ -42,7 +42,7 @@ export class AvaliacaoService {
     };
   }
 
-  // 3. Atualizar avaliação existente (UPDATE)
+  //Atualiza avaliação existente 
   async atualizar(id: number, nota?: number, texto?: string) {
     return this.prisma.avaliacao.update({
       where: { id },
@@ -53,14 +53,14 @@ export class AvaliacaoService {
     });
   }
 
-  // 4. Deletar avaliação (DELETE)
+  //Deleta avaliação
   async remover(id: number) {
     return this.prisma.avaliacao.delete({
       where: { id },
     });
   }
 
-  // 5. Adicionar comentário em uma avaliação
+  //Adiciona comentário em uma avaliação
   async adicionarComentario(avaliacaoId: number, usuarioId: number, texto: string) {
     return this.prisma.comentario.create({
       data: {
