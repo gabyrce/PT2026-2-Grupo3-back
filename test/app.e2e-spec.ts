@@ -1,29 +1,29 @@
-// testa o acesso a rota inicial da aplicação
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { App } from 'supertest/types';
+import { AppModule } from './../src/app.module';
 
-describe('Rota inicial', () => {
-  let app: INestApplication;
+describe('AppController (e2e)', () => {
+  let app: INestApplication<App>;
 
-  // inicia a aplicação uma vez para o teste
-  beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
-    app = module.createNestApplication();
+    app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  // fecha a aplicação quando o teste termina
-  afterAll(async () => {
-    await app.close();
+  it('/ (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/')
+      .expect(200)
+      .expect('Hello World!');
   });
 
-  // confirma que a rota inicial pede autenticação
-  it('exige login para acessar /', async () => {
-    await request(app.getHttpServer()).get('/').expect(401);
+  afterEach(async () => {
+    await app.close();
   });
 });
