@@ -1,0 +1,40 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: My first collection
+meta:
+  id: wrk_bdd9f644be494b8388e684b438e84e95
+  created: 1793635704813
+  modified: 1793635704813
+  description: ""
+collection:
+  - url: https://localhost:3000/
+    name: My first request
+    meta:
+      id: req_fc792c136638438d9b8580b8ef0a20ef
+      created: 1793635704834
+      modified: 1793636484486
+      isPrivate: false
+      description: ""
+      sortKey: -1793635704834
+    method: POST
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_c1ae014f60a45a5f101153bad2b30ef819342b02
+    created: 1793635704828
+    modified: 1793635704828
+environments:
+  name: Base Environment
+  meta:
+    id: env_c1ae014f60a45a5f101153bad2b30ef819342b02
+    created: 1793635704827
+    modified: 1793635704827
+    isPrivate: false
