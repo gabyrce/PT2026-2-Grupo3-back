@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { comentariosdto } from './comentarios.dto';
 
@@ -8,6 +8,14 @@ export class ComentariosService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: comentariosdto) {
+
+     if ((data.avaliacao_loja_id == null && data.avaliacao_prod_id == null) || 
+     (data.avaliacao_loja_id != null && data.avaliacao_prod_id != null)) {
+      throw new BadRequestException(
+        'O comentário deve pertencer a uma avaliação de loja OU de produto.',
+      );
+    }
+
     const comentario = await this.prisma.comentarios.create({
       data,
       include: {
