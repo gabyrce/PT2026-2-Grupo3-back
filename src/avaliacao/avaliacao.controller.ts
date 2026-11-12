@@ -5,19 +5,19 @@ import { AvaliacaoService } from './avaliacao.service';
 export class AvaliacaoController {
   constructor(private readonly avaliacaoService: AvaliacaoService) {}
 
-  // POST (Criar Avaliação)
+  // POST (cria avaliação)
   @Post()
   criar(@Body() body: { usuarioId: number; nota: number; texto: string }) {
     return this.avaliacaoService.criar(body.usuarioId, body.nota, body.texto);
   }
 
-  // GET /avaliacao (Listar Avaliações com média)
+  // GET (avaliacao 
   @Get()
   buscarTodas() {
     return this.avaliacaoService.buscarTodas();
   }
 
-  // PATCH (Atualizar Avaliação)
+  // PATCH (atualiza)
   @Patch(':id')
   atualizar(
     @Param('id') id: string,
@@ -26,13 +26,13 @@ export class AvaliacaoController {
     return this.avaliacaoService.atualizar(+id, body.nota, body.texto);
   }
 
-  // DELETE (Remover Avaliação)
+  // DELETE 
   @Delete(':id')
   remover(@Param('id') id: string) {
     return this.avaliacaoService.remover(+id);
   }
 
-  // POST (Comentar em uma Avaliação)
+  // POST (comentar)
   @Post(':id/comentario')
   adicionarComentario(
     @Param('id') id: string,
