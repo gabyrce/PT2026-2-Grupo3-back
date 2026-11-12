@@ -1,5 +1,4 @@
 export type lojasdto = {
-    id: number;
     usuario_id: number;
     categoria_id: number;
     nome: string;
