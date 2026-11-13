@@ -98,13 +98,13 @@ export class AvaliacaoService {
 
     if (t === 'loja') {
       const [, removida] = await this.prisma.$transaction([
-        this.prisma.avaliacaoComentarios.deleteMany({ where: { avaliacao_loja_id: id } }),
+        this.prisma.comentarios.deleteMany({ where: { avaliacao_loja_id: id } }),
         this.prisma.avaliacaoLojas.delete({ where: { id } }),
       ]);
       return removida;
     }
     const [, removida] = await this.prisma.$transaction([
-      this.prisma.avaliacaoComentarios.deleteMany({ where: { avaliacao_prod_id: id } }),
+      this.prisma.comentarios.deleteMany({ where: { avaliacao_prod_id: id } }),
       this.prisma.avaliacaoProdutos.delete({ where: { id } }),
     ]);
     return removida;
@@ -115,7 +115,7 @@ export class AvaliacaoService {
     const t = this.validarTipo(tipo);
     await this.garantirExiste(t, avaliacaoId);
 
-    return this.prisma.avaliacaoComentarios.create({
+    return this.prisma.comentarios.create({
       data: {
         usuario_id: usuarioId,
         conteudo: texto,
