@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { LojasModule } from './lojas/lojas.module';
+import { ImgProductModule } from './img_product/img_product.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LojasModule } from './lojas/lojas.module';
     CategoriasModule,
     ProductModule,
     LojasModule,
+    ImgProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
