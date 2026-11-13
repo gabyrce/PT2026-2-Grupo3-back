@@ -86,7 +86,24 @@ export class UserService {
 
     return usuario;
   }
+  // busca os dados públicos de um usuário
+async findPublicProfile(id: number) {
+  const usuario = await this.prisma.usuario.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      nome: true,
+      username: true,
+      profile_picture_url: true,
+    },
+  });
 
+  if (!usuario) {
+    throw new NotFoundException('Usuário não encontrado.');
+  }
+
+  return usuario;
+}
   // altera os campos enviados e gera um novo hash se a senha mudar
   async update(
     id: number,
