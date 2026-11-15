@@ -12,9 +12,12 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // lista todos os produtos.
-  async findAll() {
+  // lista os produtos e filtra pelo nome quando há uma busca.
+  async findAll(busca?: string) {
+    const termo = typeof busca === 'string' ? busca.trim() : '';
+
     return this.prisma.produtos.findMany({
+      where: termo ? { nome: { contains: termo } } : undefined,
       include: {
         loja: true,
         categoria: true,
