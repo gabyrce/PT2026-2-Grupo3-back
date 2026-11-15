@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { LojasModule } from './lojas/lojas.module';
+import { ImgProductModule } from './img_product/img_product.module';
 import { AvaliacaoModule } from './avaliacao/avaliacao.module';
 import { ComentariosModule } from './comentarios/comentarios.module';
 
@@ -22,6 +23,7 @@ import { ComentariosModule } from './comentarios/comentarios.module';
     CategoriasModule,
     ProductModule,
     LojasModule,
+    ImgProductModule,
     AvaliacaoModule,
     ComentariosModule,
   ],

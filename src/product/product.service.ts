@@ -2,14 +2,18 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { removeStoredProductImage } from '../img_product/image-storage';
 
 @Injectable()
 export class ProductService {
+  private readonly logger = new Logger(ProductService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   // lista os produtos e filtra pelo nome quando há uma busca.
@@ -44,11 +48,7 @@ export class ProductService {
     return produto;
   }
 
-    async update(
-    id: number,
-    dto: UpdateProductDto,
-    usuarioId: number,
-  ) {
+  async update(id: number, dto: UpdateProductDto, usuarioId: number) {
     const produto = await this.prisma.produtos.findUnique({
       where: { id },
       include: {
@@ -82,6 +82,7 @@ export class ProductService {
       where: { id },
       include: {
         loja: true,
+        imagens: { select: { image_url: true } },
       },
     });
 
@@ -95,9 +96,22 @@ export class ProductService {
       );
     }
 
-    return this.prisma.produtos.delete({
-      where: { id },
+    const removido = await this.prisma.$transaction(async (tx) => {
+      await tx.imagensProduto.deleteMany({ where: { produto_id: id } });
+      return tx.produtos.delete({ where: { id } });
     });
+
+    for (const imagem of produto.imagens) {
+      try {
+        await removeStoredProductImage(imagem.image_url);
+      } catch (error) {
+        this.logger.warn(
+          `Não foi possível remover uma imagem do produto: ${String(error)}`,
+        );
+      }
+    }
+
+    return removido;
   }
 
   // depois ele cadastra um produto.
