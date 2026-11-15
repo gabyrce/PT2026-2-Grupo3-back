@@ -34,6 +34,14 @@ export class UserController {
     return this.userService.findOne(currentUser.sub);
   }
 
+  // consulta o perfil público de qualquer usuário
+  @Public()
+  @Get('public/:id')
+  async findPublicProfile(
+  @Param('id', ParseIntPipe) id: number,) {
+  return this.userService.findPublicProfile(id);
+ }
+
   // consulta um usuário quando o id pertence a pessoa logada
   @Get(':id')
   async findOne(

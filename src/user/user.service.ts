@@ -74,6 +74,7 @@ export class UserService {
         nome: true,
         username: true,
         email: true,
+        profile_picture_url: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -85,11 +86,28 @@ export class UserService {
 
     return usuario;
   }
+  // busca os dados públicos de um usuário
+async findPublicProfile(id: number) {
+  const usuario = await this.prisma.usuario.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      nome: true,
+      username: true,
+      profile_picture_url: true,
+    },
+  });
 
+  if (!usuario) {
+    throw new NotFoundException('Usuário não encontrado.');
+  }
+
+  return usuario;
+}
   // altera os campos enviados e gera um novo hash se a senha mudar
   async update(
     id: number,
-    dados: { nome?: string; username?: string; email?: string; senha?: string },
+    dados: { nome?: string; username?: string; email?: string; senha?: string; profile_picture_url?: string; },
   ) {
     await this.findOne(id);
 
@@ -118,12 +136,16 @@ export class UserService {
       username?: string;
       email?: string;
       senhaHash?: string;
+      profile_picture_url?: string;
     } = {};
 
     if (dados.nome !== undefined) data.nome = dados.nome;
     if (dados.username !== undefined) data.username = dados.username;
     if (dados.email !== undefined) data.email = dados.email;
 
+    if (dados.profile_picture_url !== undefined) {
+      data.profile_picture_url = dados.profile_picture_url;
+    }
     if (dados.senha !== undefined) {
       data.senhaHash = await bcrypt.hash(dados.senha, 10);
     }
@@ -136,6 +158,7 @@ export class UserService {
         nome: true,
         username: true,
         email: true,
+        profile_picture_url: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -153,6 +176,7 @@ export class UserService {
         nome: true,
         username: true,
         email: true,
+        profile_picture_url: true,
       },
     });
   }

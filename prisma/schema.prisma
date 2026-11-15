@@ -22,7 +22,7 @@ model Usuario {
   novaSenha             NovaSenha[]
   avaliacaoLoja         AvaliacaoLojas[]
   avaliacaoProduto      AvaliacaoProdutos[]
-  avaliacaoComentario   AvaliacaoComentarios[]
+  avaliacaoComentario   Comentarios[]
 }
 
 
@@ -51,7 +51,7 @@ model Lojas {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  usuario       Usuario     @relation(fields: [usuario_id], references: [id])
+  usuario       Usuario     @relation(fields: [usuario_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   categoria     Categorias  @relation(fields: [categoria_id], references: [id])
   produtos      Produtos[]
   avaliacoes    AvaliacaoLojas[]
@@ -68,9 +68,9 @@ model Produtos {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  loja          Lojas           @relation(fields: [loja_id], references: [id])
+  loja          Lojas           @relation(fields: [loja_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   categoria     Categorias      @relation(fields: [categoria_id], references: [id])
-  imagens        ImagensProduto[]
+  imagens       ImagensProduto[]
   avaliacoes    AvaliacaoProdutos[]
 }
 
@@ -80,7 +80,7 @@ model ImagensProduto {
   image_url     String
   pedido        Int
 
-  produto      Produtos  @relation(fields: [produto_id], references: [id])
+  produto      Produtos  @relation(fields: [produto_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model NovaSenha {
@@ -91,7 +91,7 @@ model NovaSenha {
   used          Boolean @default(false)
   createdAt     DateTime @default(now())
 
-  usuario       Usuario   @relation(fields: [usuario_id], references: [id])
+  usuario       Usuario   @relation(fields: [usuario_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model AvaliacaoLojas {
@@ -103,9 +103,10 @@ model AvaliacaoLojas {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  usuario       Usuario   @relation(fields: [usuario_id], references: [id])
-  loja          Lojas     @relation(fields: [loja_id], references: [id])
-  comentarios   AvaliacaoComentarios[]
+  usuario       Usuario   @relation(fields: [usuario_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  loja          Lojas     @relation(fields: [loja_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  comentarios   Comentarios[]
+
 }
 
 model AvaliacaoProdutos {
@@ -117,12 +118,13 @@ model AvaliacaoProdutos {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  usuario       Usuario   @relation(fields: [usuario_id], references: [id])
+  usuario       Usuario   @relation(fields: [usuario_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   produto       Produtos   @relation(fields: [produto_id], references: [id])
-  comentarios   AvaliacaoComentarios[]
+  comentarios   Comentarios[]
+
 }
 
-model AvaliacaoComentarios {
+model Comentarios {
   id                  Int @id @default(autoincrement())
   usuario_id          Int
   avaliacao_loja_id   Int?
@@ -131,7 +133,8 @@ model AvaliacaoComentarios {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  usuario           Usuario           @relation(fields: [usuario_id], references: [id])
+  usuario           Usuario           @relation(fields: [usuario_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   avaliacaoLoja     AvaliacaoLojas?   @relation(fields: [avaliacao_loja_id], references: [id])
   avaliacaoProduto  AvaliacaoProdutos? @relation(fields: [avaliacao_prod_id], references: [id])
+  @@map("AvaliacaoComentarios")
 }

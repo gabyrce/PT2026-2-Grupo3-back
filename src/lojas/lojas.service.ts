@@ -11,13 +11,7 @@ export class LojasService {
     const loja = await this.prisma.lojas.create({
       data,
       include: {
-        usuario: true,
-        categoria: true,
-        nome: true,
-        descricao: true,
-        logo_url: true,
-        banner_url: true,
-        sticker_url: true,
+        categoria: true
       }
     });
     return loja;
@@ -26,13 +20,7 @@ export class LojasService {
   async findAll() {
     return await this.prisma.lojas.findMany({
       include: {
-        usuario: true,
-        categoria: true,
-        nome: true,
-        descricao: true,
-        logo_url: true,
-        banner_url: true,
-        sticker_url: true,
+        categoria: true
       }
     });
   }
@@ -49,13 +37,7 @@ export class LojasService {
       where: { id },
       data,
       include: {
-        usuario: true,
-        categoria: true,
-        nome: true,
-        descricao: true,
-        logo_url: true,
-        banner_url: true,
-        sticker_url: true,
+        categoria: true
       }
     });
   }
@@ -77,13 +59,7 @@ export class LojasService {
     const lojaexists = await this.prisma.lojas.findUnique({
       where: { id },
       include: {
-        usuario: true,
-        categoria: true,
-        nome: true,
-        descricao: true,
-        logo_url: true,
-        banner_url: true,
-        sticker_url: true,
+        categoria: true
       }
     });
 
