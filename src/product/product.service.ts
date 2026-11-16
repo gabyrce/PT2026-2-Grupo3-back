@@ -23,6 +23,21 @@ export class ProductService {
     });
   }
 
+    async findByUsuario(usuarioId: number) {
+    return this.prisma.produtos.findMany({
+      where: {
+        loja: {
+          usuario_id: usuarioId,
+        },
+      },
+      include: {
+        loja: true,
+        categoria: true,
+        imagens: true,
+      },
+    });
+  }
+
   // aqui ele busca um produto pelo ID.
   async findOne(id: number) {
     const produto = await this.prisma.produtos.findUnique({

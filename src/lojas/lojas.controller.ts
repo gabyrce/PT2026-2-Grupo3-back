@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { LojasService } from './lojas.service';
 import type { lojasdto } from './lojas.dto';
+import { Public } from '../auth/decorators/isPublic.decorator';
 
 @Controller('lojas')
 export class LojasController {
@@ -14,6 +15,12 @@ export class LojasController {
   @Get()
   findAll() {
     return this.lojasService.findAll();
+  }
+
+  @Public()
+  @Get('usuario/:usuarioId')
+  async findByUsuario(@Param('usuarioId') usuarioId: string) {
+    return this.lojasService.findByUsuario(Number(usuarioId));
   }
 
   @Get(':id')

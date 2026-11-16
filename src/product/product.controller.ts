@@ -17,6 +17,12 @@ export class ProductController {
   }
 
   @Public()
+  @Get('usuario/:usuarioId')
+  async findByUsuario(@Param('usuarioId') usuarioId: string) {
+    return this.productService.findByUsuario(Number(usuarioId));
+  }
+
+  @Public()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.productService.findOne(Number(id));

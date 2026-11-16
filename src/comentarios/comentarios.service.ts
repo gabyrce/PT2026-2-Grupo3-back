@@ -75,7 +75,7 @@ export class ComentariosService {
       include: {
         usuario: true,
         avaliacaoLoja: true,
-        avaliacaoProd: true
+        avaliacaoProduto: true
       }
     });
 

@@ -74,6 +74,34 @@ export class AvaliacaoService {
     };
   }
 
+    async buscarPorUsuario(tipo: string, usuarioId: number) {
+    const t = this.validarTipo(tipo);
+
+    const include = {
+      usuario: usuarioResumo,
+      comentarios: {
+        include: { usuario: usuarioResumo },
+        orderBy: { createdAt: 'asc' as const },
+      },
+    };
+
+    const orderBy = { createdAt: 'desc' as const };
+
+    if (t === 'loja') {
+      return this.prisma.avaliacaoLojas.findMany({
+        where: { usuario_id: usuarioId },
+        include,
+        orderBy,
+      });
+    }
+
+    return this.prisma.avaliacaoProdutos.findMany({
+      where: { usuario_id: usuarioId },
+      include,
+      orderBy,
+    });
+  }
+
   // Atualiza avaliação existente
   async atualizar(tipo: string, id: number, nota?: number, texto?: string) {
     const t = this.validarTipo(tipo);

@@ -10,6 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { AvaliacaoService } from './avaliacao.service';
+import { Public } from '../auth/decorators/isPublic.decorator';
 
 // :tipo = "loja" ou "produto"
 @Controller('avaliacao/:tipo')
@@ -31,7 +32,17 @@ export class AvaliacaoController {
     return this.avaliacaoService.buscarTodas(tipo, alvoId !== undefined ? +alvoId : undefined);
   }
 
-  // PATCH /avaliacao/:tipo/:id  (atualiza)
+  // GET /avaliacao/:tipo/usuario/:usuarioId
+  @Public()
+  @Get('usuario/:usuarioId')
+  buscarPorUsuario(
+    @Param('tipo') tipo: string,
+    @Param('usuarioId', ParseIntPipe) usuarioId: number,
+  ) {
+    return this.avaliacaoService.buscarPorUsuario(tipo, usuarioId);
+  }
+
+  // PATCH /avaliacao/:tipo/:id (atualiza)
   @Patch(':id')
   atualizar(
     @Param('tipo') tipo: string,

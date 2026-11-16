@@ -25,6 +25,17 @@ export class LojasService {
     });
   }
 
+  async findByUsuario(usuarioId: number) {
+  return await this.prisma.lojas.findMany({
+    where: {
+      usuario_id: usuarioId
+    },
+    include: {
+      categoria: true
+      }
+    });
+  }
+
   async update(id: number, data: lojasdto) {
     const lojaexists = await this.prisma.lojas.findUnique({
       where: { id }
