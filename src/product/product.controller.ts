@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
@@ -12,8 +12,8 @@ export class ProductController {
 
   @Public()
   @Get()
-  async findAll() {
-    return this.productService.findAll();
+  async findAll(@Query('busca') busca?: string) {
+    return this.productService.findAll(busca);
   }
 
   @Public()
