@@ -1,9 +1,9 @@
-
 // faz as operações de usuário no banco e protege a senha
 import {
   Injectable,
   NotFoundException,
   ConflictException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -107,7 +107,7 @@ async findPublicProfile(id: number) {
   // altera os campos enviados e gera um novo hash se a senha mudar
   async update(
     id: number,
-    dados: { nome?: string; username?: string; email?: string; senha?: string; profile_picture_url?: string; },
+    dados: { nome?: string; username?: string; email?: string; profile_picture_url?: string; },
   ) {
     await this.findOne(id);
 
@@ -135,7 +135,6 @@ async findPublicProfile(id: number) {
       nome?: string;
       username?: string;
       email?: string;
-      senhaHash?: string;
       profile_picture_url?: string;
     } = {};
 
@@ -145,9 +144,6 @@ async findPublicProfile(id: number) {
 
     if (dados.profile_picture_url !== undefined) {
       data.profile_picture_url = dados.profile_picture_url;
-    }
-    if (dados.senha !== undefined) {
-      data.senhaHash = await bcrypt.hash(dados.senha, 10);
     }
 
     return this.prisma.usuario.update({
@@ -163,6 +159,43 @@ async findPublicProfile(id: number) {
         updatedAt: true,
       },
     });
+  }
+
+  // altera a senha somente após confirmar a senha atual
+  async changePassword(
+    id: number,
+    senhaAtual: string,
+    novaSenha: string,
+  ) {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        senhaHash: true,
+      },
+    });
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+
+    const senhaValida = await bcrypt.compare(
+      senhaAtual,
+      usuario.senhaHash,
+    );
+
+    if (!senhaValida) {
+      throw new UnauthorizedException('A senha atual está incorreta.');
+    }
+
+    const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
+
+    await this.prisma.usuario.update({
+      where: { id },
+      data: { senhaHash: novaSenhaHash },
+    });
+
+    return { message: 'Senha alterada com sucesso.' };
   }
 
   // exclui a conta depois de confirmar que ela existe

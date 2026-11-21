@@ -11,6 +11,7 @@ import { LojasModule } from './lojas/lojas.module';
 import { ImgProductModule } from './img_product/img_product.module';
 import { AvaliacaoModule } from './avaliacao/avaliacao.module';
 import { ComentariosModule } from './comentarios/comentarios.module';
+import { ProfileImageModule } from './profile-image/profile-image.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ComentariosModule } from './comentarios/comentarios.module';
     ProductModule,
     LojasModule,
     ImgProductModule,
+    ProfileImageModule,  
     AvaliacaoModule,
     ComentariosModule,
   ],

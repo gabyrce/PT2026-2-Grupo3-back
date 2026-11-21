@@ -13,6 +13,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { Public } from '../auth/decorators/isPublic.decorator';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
 import { UserPayload } from '../auth/types/UserPayload';
@@ -32,6 +33,19 @@ export class UserController {
   @Get('me')
   async findMyProfile(@CurrentUser() currentUser: UserPayload) {
     return this.userService.findOne(currentUser.sub);
+  }
+
+  // altera a senha da pessoa autenticada
+  @Patch('me/senha')
+  async changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @CurrentUser() currentUser: UserPayload,
+  ) {
+    return this.userService.changePassword(
+      currentUser.sub,
+      changePasswordDto.senhaAtual,
+      changePasswordDto.novaSenha,
+    );
   }
 
   // consulta o perfil público de qualquer usuário

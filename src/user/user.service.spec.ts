@@ -1,5 +1,10 @@
 // testa as regras de usuário sem alterar no banco de dados de fato
-import { ConflictException, NotFoundException } from '@nestjs/common';
+
+import {
+  ConflictException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from './user.service';
@@ -111,18 +116,6 @@ describe('UserService', () => {
     });
   });
 
-  // gera outro hash quando a senha muda
-  it('transforma a nova senha em hash na atualização', async () => {
-    prismaMock.usuario.findUnique.mockResolvedValue(usuario);
-    prismaMock.usuario.update.mockResolvedValue(usuario);
-
-    await service.update(1, { senha: 'novaSenha123' });
-
-    const data = prismaMock.usuario.update.mock.calls[0][0].data;
-    expect(data.senhaHash).not.toBe('novaSenha123');
-    expect(await bcrypt.compare('novaSenha123', data.senhaHash)).toBe(true);
-  });
-
   // não deixa usar um nome de usuário que já pertence a outra conta
   it('recusa username pertencente a outro usuário na atualização', async () => {
     prismaMock.usuario.findUnique
@@ -165,4 +158,52 @@ describe('UserService', () => {
     await expect(service.remove(999)).rejects.toThrow(NotFoundException);
     expect(prismaMock.usuario.delete).not.toHaveBeenCalled();
   });
+
+
+  // altera a senha quando a senha atual está correta
+  it('altera a senha após validar a senha atual', async () => {
+    const senhaHash = await bcrypt.hash('senhaAtual123', 10);
+
+    prismaMock.usuario.findUnique.mockResolvedValue({
+      id: 1,
+      senhaHash,
+    });
+    prismaMock.usuario.update.mockResolvedValue(usuario);
+
+    await expect(
+      service.changePassword(1, 'senhaAtual123', 'novaSenha123'),
+    ).resolves.toEqual({ message: 'Senha alterada com sucesso.' });
+
+    const data = prismaMock.usuario.update.mock.calls[0][0].data;
+
+    expect(await bcrypt.compare('novaSenha123', data.senhaHash)).toBe(true);
+  });
+
+  // rejeita a alteração quando a senha atual está incorreta
+  it('recusa alteração com senha atual incorreta', async () => {
+    const senhaHash = await bcrypt.hash('senhaCorreta123', 10);
+
+    prismaMock.usuario.findUnique.mockResolvedValue({
+      id: 1,
+      senhaHash,
+    });
+
+    await expect(
+      service.changePassword(1, 'senhaErrada123', 'novaSenha123'),
+    ).rejects.toThrow(UnauthorizedException);
+
+    expect(prismaMock.usuario.update).not.toHaveBeenCalled();
+  });
+
+  // rejeita a alteração quando o usuário não existe
+  it('recusa alteração de senha para usuário inexistente', async () => {
+    prismaMock.usuario.findUnique.mockResolvedValue(null);
+
+    await expect(
+      service.changePassword(999, 'senhaAtual123', 'novaSenha123'),
+    ).rejects.toThrow(NotFoundException);
+
+    expect(prismaMock.usuario.update).not.toHaveBeenCalled();
+  });
+
 });
