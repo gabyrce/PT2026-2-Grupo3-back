@@ -1,21 +1,26 @@
+
 // faz as operações de usuário no banco e protege a senha
 import {
   Injectable,
   NotFoundException,
   ConflictException,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { removeStoredProfileImage } from '../profile-image/image-storage';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   // verifica duplicidades, gera o hash da senha e cria a conta
   async create(dto: CreateUserDto) {
-    const email_existente = await this.prisma.usuario.findUnique({ //verifica se tem email cadastrado
+    const email_existente = await this.prisma.usuario.findUnique({
       where: { email: dto.email },
     });
 
@@ -86,28 +91,35 @@ export class UserService {
 
     return usuario;
   }
-  // busca os dados públicos de um usuário
-async findPublicProfile(id: number) {
-  const usuario = await this.prisma.usuario.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      nome: true,
-      username: true,
-      profile_picture_url: true,
-    },
-  });
 
-  if (!usuario) {
-    throw new NotFoundException('Usuário não encontrado.');
+  // busca os dados públicos de um usuário
+  async findPublicProfile(id: number) {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        username: true,
+        profile_picture_url: true,
+      },
+    });
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+
+    return usuario;
   }
 
-  return usuario;
-}
-  // altera os campos enviados e gera um novo hash se a senha mudar
+  // altera os campos enviados
   async update(
     id: number,
-    dados: { nome?: string; username?: string; email?: string; profile_picture_url?: string; },
+    dados: {
+      nome?: string;
+      username?: string;
+      email?: string;
+      profile_picture_url?: string;
+    },
   ) {
     await this.findOne(id);
 
@@ -198,20 +210,146 @@ async findPublicProfile(id: number) {
     return { message: 'Senha alterada com sucesso.' };
   }
 
-  // exclui a conta depois de confirmar que ela existe
-  async remove(id: number) {
-    await this.findOne(id);
-
-    return this.prisma.usuario.delete({
+  // exclui a conta após confirmar a senha atual
+  async deleteAccount(id: number, senhaAtual: string) {
+    const usuario = await this.prisma.usuario.findUnique({
       where: { id },
       select: {
         id: true,
-        nome: true,
-        username: true,
-        email: true,
+        senhaHash: true,
         profile_picture_url: true,
+        lojas: {
+          select: {
+            id: true,
+            produtos: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
       },
     });
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+
+    const senhaValida = await bcrypt.compare(
+      senhaAtual,
+      usuario.senhaHash,
+    );
+
+    if (!senhaValida) {
+      throw new UnauthorizedException('A senha atual está incorreta.');
+    }
+
+    const lojaIds = usuario.lojas.map((loja) => loja.id);
+
+    const produtoIds = usuario.lojas.flatMap((loja) =>
+      loja.produtos.map((produto) => produto.id),
+    );
+
+    await this.prisma.$transaction(async (tx) => {
+      // identifica as avaliações escritas pelo usuário
+      // e as avaliações vinculadas às lojas e produtos dele
+      const avaliacoesLojas = await tx.avaliacaoLojas.findMany({
+        where: {
+          OR: [
+            { usuario_id: id },
+            { loja_id: { in: lojaIds } },
+          ],
+        },
+        select: { id: true },
+      });
+
+      const avaliacoesProdutos = await tx.avaliacaoProdutos.findMany({
+        where: {
+          OR: [
+            { usuario_id: id },
+            { produto_id: { in: produtoIds } },
+          ],
+        },
+        select: { id: true },
+      });
+
+      const avaliacaoLojaIds = avaliacoesLojas.map(
+        (avaliacao) => avaliacao.id,
+      );
+
+      const avaliacaoProdutoIds = avaliacoesProdutos.map(
+        (avaliacao) => avaliacao.id,
+      );
+
+      // exclui comentários do usuário e comentários
+      // vinculados às avaliações que serão removidas
+      await tx.comentarios.deleteMany({
+        where: {
+          OR: [
+            { usuario_id: id },
+            { avaliacao_loja_id: { in: avaliacaoLojaIds } },
+            { avaliacao_prod_id: { in: avaliacaoProdutoIds } },
+          ],
+        },
+      });
+
+      // remove as avaliações identificadas
+      await tx.avaliacaoLojas.deleteMany({
+        where: {
+          id: { in: avaliacaoLojaIds },
+        },
+      });
+
+      await tx.avaliacaoProdutos.deleteMany({
+        where: {
+          id: { in: avaliacaoProdutoIds },
+        },
+      });
+
+      // remove imagens e produtos das lojas do usuário
+      await tx.imagensProduto.deleteMany({
+        where: {
+          produto_id: { in: produtoIds },
+        },
+      });
+
+      await tx.produtos.deleteMany({
+        where: {
+          id: { in: produtoIds },
+        },
+      });
+
+      // remove as lojas
+      await tx.lojas.deleteMany({
+        where: {
+          id: { in: lojaIds },
+        },
+      });
+
+      // remove códigos de recuperação de senha
+      await tx.novaSenha.deleteMany({
+        where: { usuario_id: id },
+      });
+
+      // por último, remove a conta
+      await tx.usuario.delete({
+        where: { id },
+      });
+    });
+
+    // remove a foto somente depois que a transação foi concluída
+    if (usuario.profile_picture_url) {
+      try {
+        await removeStoredProfileImage(usuario.profile_picture_url);
+      } catch (error) {
+        this.logger.error(
+          'A conta foi excluída, mas não foi possível remover a foto de perfil.',
+          error instanceof Error ? error.stack : String(error),
+        );
+      }
+    }
+
+    return { message: 'Conta excluída com sucesso.' };
   }
 
   // busca o cadastro pelo e-mail para conferir o login

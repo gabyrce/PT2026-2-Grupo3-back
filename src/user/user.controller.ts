@@ -14,6 +14,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { DeleteAccountDto } from './dto/delete-account.dto';
 import { Public } from '../auth/decorators/isPublic.decorator';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
 import { UserPayload } from '../auth/types/UserPayload';
@@ -22,20 +23,17 @@ import { UserPayload } from '../auth/types/UserPayload';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // cadastra um usuário com os dados enviados
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  // busca o perfil da pessoa que fez login
   @Get('me')
   async findMyProfile(@CurrentUser() currentUser: UserPayload) {
     return this.userService.findOne(currentUser.sub);
   }
 
-  // altera a senha da pessoa autenticada
   @Patch('me/senha')
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
@@ -48,15 +46,12 @@ export class UserController {
     );
   }
 
-  // consulta o perfil público de qualquer usuário
   @Public()
   @Get('public/:id')
-  async findPublicProfile(
-  @Param('id', ParseIntPipe) id: number,) {
-  return this.userService.findPublicProfile(id);
- }
+  async findPublicProfile(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.findPublicProfile(id);
+  }
 
-  // consulta um usuário quando o id pertence a pessoa logada
   @Get(':id')
   async findOne(
     @Param('id', ParseIntPipe) id: number,
@@ -67,11 +62,9 @@ export class UserController {
         'Você só pode consultar sua própria conta.',
       );
     }
-
     return this.userService.findOne(id);
   }
 
-  // altera apenas a conta da pessoa logada
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -83,22 +76,17 @@ export class UserController {
         'Você só pode alterar sua própria conta.',
       );
     }
-
     return this.userService.update(id, updateUserDto);
   }
 
-  // apaga apenas a conta da pessoa logada
-  @Delete(':id')
-  async remove(
-    @Param('id', ParseIntPipe) id: number,
+  @Delete('me')
+  async deleteAccount(
+    @Body() deleteAccountDto: DeleteAccountDto,
     @CurrentUser() currentUser: UserPayload,
   ) {
-    if (id !== currentUser.sub) {
-      throw new UnauthorizedException(
-        'Você só pode deletar sua própria conta.',
-      );
-    }
-
-    return this.userService.remove(id);
+    return this.userService.deleteAccount(
+      currentUser.sub,
+      deleteAccountDto.senhaAtual,
+    );
   }
 }
