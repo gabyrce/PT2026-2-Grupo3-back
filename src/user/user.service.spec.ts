@@ -1,3 +1,4 @@
+
 // testa as regras de usuário sem alterar no banco de dados de fato
 
 import {
@@ -9,8 +10,25 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from './user.service';
 
+type MockModel = {
+  findMany: jest.Mock;
+  deleteMany: jest.Mock;
+  delete: jest.Mock;
+};
+
 describe('UserService', () => {
   let service: UserService;
+  let txMock: {
+    avaliacaoLojas: MockModel;
+    avaliacaoProdutos: MockModel;
+    comentarios: MockModel;
+    imagensProduto: MockModel;
+    produtos: MockModel;
+    lojas: MockModel;
+    novaSenha: MockModel;
+    usuario: MockModel;
+  };
+
   let prismaMock: {
     usuario: {
       findUnique: jest.Mock;
@@ -18,6 +36,7 @@ describe('UserService', () => {
       update: jest.Mock;
       delete: jest.Mock;
     };
+    $transaction: jest.Mock;
   };
 
   const usuario = {
@@ -38,6 +57,23 @@ describe('UserService', () => {
 
   // monta um banco falso antes de cada teste.
   beforeEach(() => {
+    const criarMockModel = (): MockModel => ({
+      findMany: jest.fn().mockResolvedValue([]),
+      deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
+      delete: jest.fn().mockResolvedValue(usuario),
+    });
+
+    txMock = {
+      avaliacaoLojas: criarMockModel(),
+      avaliacaoProdutos: criarMockModel(),
+      comentarios: criarMockModel(),
+      imagensProduto: criarMockModel(),
+      produtos: criarMockModel(),
+      lojas: criarMockModel(),
+      novaSenha: criarMockModel(),
+      usuario: criarMockModel(),
+    };
+
     prismaMock = {
       usuario: {
         findUnique: jest.fn(),
@@ -45,7 +81,13 @@ describe('UserService', () => {
         update: jest.fn(),
         delete: jest.fn(),
       },
+      $transaction: jest.fn(),
     };
+
+    prismaMock.$transaction.mockImplementation(
+      (callback: (tx: typeof txMock) => Promise<unknown>) =>
+        callback(txMock),
+    );
 
     service = new UserService(prismaMock as unknown as PrismaService);
   });
@@ -140,25 +182,62 @@ describe('UserService', () => {
     expect(prismaMock.usuario.update).not.toHaveBeenCalled();
   });
 
-  // remove a conta quando o id existe
-  it('exclui um usuário existente', async () => {
-    prismaMock.usuario.findUnique.mockResolvedValue(usuario);
-    prismaMock.usuario.delete.mockResolvedValue(usuario);
+  // exclui a conta quando a senha atual está correta
+  it('exclui a conta após validar a senha atual', async () => {
+    const senhaHash = await bcrypt.hash('senhaCorreta123', 10);
 
-    await expect(service.remove(1)).resolves.toEqual(usuario);
-    expect(prismaMock.usuario.delete).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 1 } }),
-    );
+    prismaMock.usuario.findUnique.mockResolvedValue({
+      id: 1,
+      senhaHash,
+      profile_picture_url: null,
+      lojas: [],
+    });
+
+    await expect(
+      service.deleteAccount(1, 'senhaCorreta123'),
+    ).resolves.toEqual({ message: 'Conta excluída com sucesso.' });
+
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
+    expect(txMock.comentarios.deleteMany).toHaveBeenCalled();
+    expect(txMock.avaliacaoLojas.deleteMany).toHaveBeenCalled();
+    expect(txMock.avaliacaoProdutos.deleteMany).toHaveBeenCalled();
+    expect(txMock.imagensProduto.deleteMany).toHaveBeenCalled();
+    expect(txMock.produtos.deleteMany).toHaveBeenCalled();
+    expect(txMock.lojas.deleteMany).toHaveBeenCalled();
+    expect(txMock.novaSenha.deleteMany).toHaveBeenCalled();
+    expect(txMock.usuario.delete).toHaveBeenCalledWith({
+      where: { id: 1 },
+    });
   });
 
-  // evita a exclusão quando o id não existe
+  // impede a exclusão quando a senha atual está incorreta
+  it('recusa exclusão com senha atual incorreta', async () => {
+    const senhaHash = await bcrypt.hash('senhaCorreta123', 10);
+
+    prismaMock.usuario.findUnique.mockResolvedValue({
+      id: 1,
+      senhaHash,
+      profile_picture_url: null,
+      lojas: [],
+    });
+
+    await expect(
+      service.deleteAccount(1, 'senhaErrada123'),
+    ).rejects.toThrow(UnauthorizedException);
+
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  // evita a exclusão quando o usuário não existe
   it('não tenta excluir um usuário inexistente', async () => {
     prismaMock.usuario.findUnique.mockResolvedValue(null);
 
-    await expect(service.remove(999)).rejects.toThrow(NotFoundException);
-    expect(prismaMock.usuario.delete).not.toHaveBeenCalled();
-  });
+    await expect(
+      service.deleteAccount(999, 'senha123'),
+    ).rejects.toThrow(NotFoundException);
 
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
 
   // altera a senha quando a senha atual está correta
   it('altera a senha após validar a senha atual', async () => {
@@ -205,5 +284,4 @@ describe('UserService', () => {
 
     expect(prismaMock.usuario.update).not.toHaveBeenCalled();
   });
-
 });

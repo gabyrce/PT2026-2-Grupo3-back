@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "jest",
     "start": "ts-node src/main.ts",
     "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "format": "prettier --write \"src/**/*.ts\"",
