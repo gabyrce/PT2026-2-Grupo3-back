@@ -1,0 +1,293 @@
+[
+  {
+    "nome": "Brownie Meio Amargo",
+    "preco": "R$4,70",
+    "stock": 3,
+    "categoria": "mercado",
+    "nomeLoja": "CJR",
+    "descricao": "BROWNIE MEIO AMARGO 80g\n\nRecheado com uma ganache de chocolate meio amargo bem cremosa, esse brownie conquistou o coração de muita gente!",
+    "imagens": [
+      "/produtos/brownie.png",
+      "/produtos/brownie2.png",
+      "/produtos/brownie3.png",
+      "/produtos/brownietabela.jpg"
+    ],
+    "logoLoja": "/lojas/cjr.png"
+  },
+  {
+    "nome": "Brownie Trad.",
+    "preco": "R$3,80",
+    "stock": 0,
+    "categoria": "mercado",
+    "nomeLoja": "CJR",
+    "descricao": "BROWNIE TRADICIONAL 80g\n\nMassa úmida e casquinha crocante feita com chocolate nobre.",
+    "imagens": [
+      "/produtos/browniet.png"
+    ],
+    "logoLoja": "/lojas/cjr.png"
+  },
+  {
+    "nome": "Brownie Doce L.",
+    "preco": "R$4,70",
+    "stock": 8,
+    "categoria": "mercado",
+    "nomeLoja": "CJR",
+    "descricao": "BROWNIE DOCE DE LEITE 80g\n\nRecheado com doce de leite cremoso artesanal.",
+    "imagens": [
+      "/produtos/brownie-doce.png"
+    ],
+    "logoLoja": "/lojas/cjr.png"
+  },
+  {
+    "nome": "Brownie Nozes",
+    "preco": "R$4,70",
+    "stock": 5,
+    "categoria": "mercado",
+    "nomeLoja": "CJR",
+    "descricao": "BROWNIE NOZES 80g\n\nChocolate intenso com pedaços crocantes de nozes.",
+    "imagens": [
+      "/produtos/brownie-nozes.png"
+    ],
+    "logoLoja": "/lojas/cjr.png"
+  },
+  {
+    "nome": "Brownie Cookies",
+    "preco": "R$4,70",
+    "stock": 0,
+    "categoria": "mercado",
+    "nomeLoja": "CJR",
+    "descricao": "BROWNIE COOKIES & CREAM 80g\n\nRecheio cremoso de chocolate branco com pedaços de biscoito.",
+    "imagens": [
+      "/produtos/brownie-cookies.png"
+    ],
+    "logoLoja": "/lojas/cjr.png"
+  },
+  {
+    "nome": "Brownie M&Ms",
+    "preco": "R$4,70",
+    "stock": 4,
+    "categoria": "mercado",
+    "nomeLoja": "CJR",
+    "descricao": "BROWNIE CONFEITOS 80g\n\nMassa tradicional coberta e recheada com confeitos coloridos.",
+    "imagens": [
+      "/produtos/brownie-mm.png"
+    ],
+    "logoLoja": "/lojas/cjr.png"
+  },
+  {
+    "nome": "Nozes",
+    "preco": "R$29,99",
+    "stock": 12,
+    "categoria": "mercado",
+    "nomeLoja": "D'Carts & Baskets",
+    "descricao": "Nozes selecionadas frescas, vendidas por quilo.",
+    "imagens": [
+      "/produtos/nozes.png"
+    ],
+    "logoLoja": "/lojas/db.png"
+  },
+  {
+    "nome": "Banana",
+    "preco": "R$3,99",
+    "stock": 25,
+    "categoria": "mercado",
+    "nomeLoja": "MauMau Hortifruti",
+    "descricao": "Banana prata selecionada e madura.",
+    "imagens": [
+      "/produtos/banana.png"
+    ],
+    "logoLoja": "/lojas/maumau.png"
+  },
+  {
+    "nome": "Limão Siciliano",
+    "preco": "R$17,99",
+    "stock": 0,
+    "categoria": "mercado",
+    "nomeLoja": "MauMau Hortifruti",
+    "descricao": "Limão siciliano fresco ideal para sucos e culinária.",
+    "imagens": [
+      "/produtos/limao.png"
+    ],
+    "logoLoja": "/lojas/maumau.png"
+  },
+  {
+    "nome": "Limpador Facial",
+    "preco": "R$74,99",
+    "stock": 8,
+    "categoria": "beleza",
+    "nomeLoja": "Creamy",
+    "descricao": "Gel de limpeza facial suave para todos os tipos de pele.",
+    "imagens": [
+      "/produtos/limpador.png"
+    ],
+    "logoLoja": "/lojas/creamy.png"
+  },
+  {
+    "nome": "Blush",
+    "preco": "R$199,99",
+    "stock": 0,
+    "categoria": "beleza",
+    "nomeLoja": "Rare Beauty",
+    "descricao": "Blush líquido de alta pigmentação e acabamento natural.",
+    "imagens": [
+      "/produtos/blush.png"
+    ],
+    "logoLoja": "/lojas/rare.png"
+  },
+  {
+    "nome": "Sérum Facial",
+    "preco": "R$99,90",
+    "stock": 14,
+    "categoria": "beleza",
+    "nomeLoja": "Creamy",
+    "descricao": "Sérum hidratante e uniformizador de textura.",
+    "imagens": [
+      "/produtos/serum.png"
+    ],
+    "logoLoja": "/lojas/creamy.png"
+  },
+  {
+    "nome": "Iluminador",
+    "preco": "R$249,90",
+    "stock": 5,
+    "categoria": "beleza",
+    "nomeLoja": "Rare Beauty",
+    "descricao": "Iluminador compacto com brilho sedoso.",
+    "imagens": [
+      "/produtos/iluminador.png"
+    ],
+    "logoLoja": "/lojas/rare.png"
+  },
+  {
+    "nome": "Body Splash",
+    "preco": "R$179,99",
+    "stock": 0,
+    "categoria": "beleza",
+    "nomeLoja": "Roots",
+    "descricao": "Colônia corporal refrescante com notas de baunilha.",
+    "imagens": [
+      "/produtos/bodysplash.png"
+    ],
+    "logoLoja": "/lojas/roots.png"
+  },
+  {
+    "nome": "Saia",
+    "preco": "R$75,99",
+    "stock": 6,
+    "categoria": "moda",
+    "nomeLoja": "Mélina Couture",
+    "descricao": "Saia midi fluida em tecido leve.",
+    "imagens": [
+      "/produtos/saia.png"
+    ],
+    "logoLoja": "/lojas/melina.png"
+  },
+  {
+    "nome": "New Balance",
+    "preco": "R$399,99",
+    "stock": 0,
+    "categoria": "moda",
+    "nomeLoja": "Footshop",
+    "descricao": "Tênis casual confortável com amortecimento.",
+    "imagens": [
+      "/produtos/tenis.png"
+    ],
+    "logoLoja": "/lojas/fsh.png"
+  },
+  {
+    "nome": "Bota",
+    "preco": "R$115,90",
+    "stock": 4,
+    "categoria": "moda",
+    "nomeLoja": "Footshop",
+    "descricao": "Bota coturno tratorada em material sintético.",
+    "imagens": [
+      "/produtos/bota.png"
+    ],
+    "logoLoja": "/lojas/fsh.png"
+  },
+  {
+    "nome": "Bolsa",
+    "preco": "R$349,90",
+    "stock": 7,
+    "categoria": "moda",
+    "nomeLoja": "Mélina Couture",
+    "descricao": "Bolsa tiracolo matelassê com alça de corrente.",
+    "imagens": [
+      "/produtos/bolsa.png"
+    ],
+    "logoLoja": "/lojas/melina.png"
+  },
+  {
+    "nome": "Calça Jeans",
+    "preco": "R$159,99",
+    "stock": 0,
+    "categoria": "moda",
+    "nomeLoja": "Mélina Couture",
+    "descricao": "Calça jeans wide leg cintura alta.",
+    "imagens": [
+      "/produtos/calca.png"
+    ],
+    "logoLoja": "/lojas/melina.png"
+  },
+  {
+    "nome": "Comp. Lenovo",
+    "preco": "R$3.899,99",
+    "stock": 10,
+    "categoria": "notebooks",
+    "nomeLoja": "Repiit",
+    "descricao": null,
+    "imagens": ["/produtos/1.png"],
+    "logoLoja": "/lojas/repiit.png"
+  },
+  {
+    "nome": "Comp. Samsung",
+    "preco": "R$8.549,99",
+    "stock": 0,
+    "categoria": "notebooks",
+    "nomeLoja": "Repiit",
+    "descricao": null,
+    "imagens": ["/produtos/2.png"],
+    "logoLoja": "/lojas/repiit.png"
+  },
+  {
+    "nome": "Iphone 15",
+    "preco": "R$4.769,10",
+    "stock": 10,
+    "categoria": "celulares",
+    "nomeLoja": "Bersay",
+    "descricao": null,
+    "imagens": ["/produtos/3.png"],
+    "logoLoja": "/lojas/bersay.png"
+  },
+  {
+    "nome": "Smart Tv Philips",
+    "preco": "R$1.229,00",
+    "stock": 10,
+    "categoria": "tvs",
+    "nomeLoja": "Repiit",
+    "descricao": null,
+    "imagens": ["/produtos/4.png"],
+    "logoLoja": "/lojas/repiit.png"
+  },
+  {
+    "nome": "Xbox Series X",
+    "preco": "R$3.599,99",
+    "stock": 10,
+    "categoria": "outros",
+    "nomeLoja": "Hobby",
+    "descricao": null,
+    "imagens": ["/produtos/5.png"],
+    "logoLoja": "/lojas/hobby.png"
+  },
+  {
+    "nome": "Headset Gamer",
+    "preco": "R$899,99",
+    "stock": 0,
+    "categoria": "acessórios",
+    "nomeLoja": "Hobby",
+    "descricao": null,
+    "imagens": ["/produtos/6.png"],
+    "logoLoja": "/lojas/hobby.png"
+  }
+]
