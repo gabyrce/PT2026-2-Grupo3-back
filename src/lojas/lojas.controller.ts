@@ -65,6 +65,7 @@ export class LojasController {
     return this.lojasImageService.upload(id, currentUser.sub, files);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.lojasService.findAll();
