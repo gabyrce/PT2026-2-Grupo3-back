@@ -20,7 +20,13 @@ export class LojasService {
   async findAll() {
     return await this.prisma.lojas.findMany({
       include: {
-        categoria: true
+        categoria: true,
+        usuario: {
+          select: {
+            id: true,
+            nome: true,
+          }
+        }
       }
     });
   }
@@ -70,7 +76,13 @@ export class LojasService {
     const lojaexists = await this.prisma.lojas.findUnique({
       where: { id },
       include: {
-        categoria: true
+        categoria: true,
+        usuario: {
+          select: {
+            id: true,
+            nome: true,
+          }
+        }
       }
     });
 

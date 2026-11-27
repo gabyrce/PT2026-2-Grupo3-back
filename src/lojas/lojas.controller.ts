@@ -77,6 +77,7 @@ export class LojasController {
     return this.lojasService.findByUsuario(Number(usuarioId));
   }
 
+  @Public()
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return this.lojasService.findOne(Number(id));
