@@ -57,14 +57,4 @@ export class AvaliacaoController {
   remover(@Param('tipo') tipo: string, @Param('id', ParseIntPipe) id: number) {
     return this.avaliacaoService.remover(tipo, id);
   }
-
-  // POST /avaliacao/:tipo/:id/comentario  (comenta em uma avaliação)
-  @Post(':id/comentario')
-  adicionarComentario(
-    @Param('tipo') tipo: string,
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: { usuarioId: number; texto: string },
-  ) {
-    return this.avaliacaoService.adicionarComentario(tipo, id, body.usuarioId, body.texto);
-  }
 }
