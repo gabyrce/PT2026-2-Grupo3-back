@@ -112,6 +112,16 @@ export class ProductService {
     }
 
     const removido = await this.prisma.$transaction(async (tx) => {
+      const avaliacoes = await tx.avaliacaoProdutos.findMany({
+        where: { produto_id: id },
+        select: { id: true },
+      });
+      const avaliacaoIds = avaliacoes.map((avaliacao) => avaliacao.id);
+
+      await tx.comentarios.deleteMany({
+        where: { avaliacao_prod_id: { in: avaliacaoIds } },
+      });
+      await tx.avaliacaoProdutos.deleteMany({ where: { produto_id: id } });
       await tx.imagensProduto.deleteMany({ where: { produto_id: id } });
       return tx.produtos.delete({ where: { id } });
     });
