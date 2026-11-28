@@ -27,6 +27,7 @@ export class AvaliacaoController {
   }
 
   // GET /avaliacao/:tipo?alvoId=1  (lista avaliações e média; alvoId opcional)
+  @Public()
   @Get()
   buscarTodas(@Param('tipo') tipo: string, @Query('alvoId') alvoId?: string) {
     return this.avaliacaoService.buscarTodas(tipo, alvoId !== undefined ? +alvoId : undefined);
