@@ -138,23 +138,6 @@ export class AvaliacaoService {
     return removida;
   }
 
-  // Adiciona comentário em uma avaliação
-  async adicionarComentario(tipo: string, avaliacaoId: number, usuarioId: number, texto: string) {
-    const t = this.validarTipo(tipo);
-    await this.garantirExiste(t, avaliacaoId);
-
-    return this.prisma.comentarios.create({
-      data: {
-        usuario_id: usuarioId,
-        conteudo: texto,
-        ...(t === 'loja'
-          ? { avaliacao_loja_id: avaliacaoId }
-          : { avaliacao_prod_id: avaliacaoId }),
-      },
-      include: { usuario: usuarioResumo },
-    });
-  }
-
   private async garantirExiste(tipo: TipoAvaliacao, id: number) {
     const avaliacao =
       tipo === 'loja'
